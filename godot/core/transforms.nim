@@ -67,7 +67,7 @@ proc xformInvAABB*(self: Transform; rect: AABB): AABB {.inline.} =
   getGDNativeAPI().transformXformInvAABB(self, rect).toAABB()
 
 proc `==`*(self: Transform; b: Transform): bool {.inline.} =
-  getGDNativeAPI().transformOperatorEqual(self, b)
+  self.basis == b.basis and self.origin == b.origin
 
 proc `*`*(self, other: Transform): Transform {.inline.} =
   getGDNativeAPI().transformOperatorMultiply(self, other).toTransform()

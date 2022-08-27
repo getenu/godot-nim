@@ -43,7 +43,10 @@ proc intersectsSegment*(self: AABB; start, to: Vector3): bool {.inline.} =
   getGDNativeAPI().aabbIntersectsSegment(self, start, to)
 
 proc contains*(self: AABB; point: Vector3): bool {.inline.} =
-  getGDNativeAPI().aabbHasPoint(self, point)
+  result =
+    point.x >= self.position.x and point.x <= self.position.x + self.size.x and
+    point.y >= self.position.y and point.y <= self.position.y + self.size.y and
+    point.z >= self.position.x and point.z <= self.position.z + self.size.z
 
 proc getSupport*(self: AABB; dir: Vector3): Vector3 {.inline.} =
   getGDNativeAPI().aabbGetSupport(self, dir).toVector3()
@@ -66,8 +69,20 @@ proc getShortestAxisIndex*(self: AABB): cint {.inline.} =
 proc getShortestAxisSize*(self: AABB): float32 {.inline.} =
   getGDNativeAPI().aabbGetShortestAxisSize(self)
 
-proc expand*(self: AABB; toPoint: Vector3): AABB {.inline.} =
-  getGDNativeAPI().aabbExpand(self, toPoint).toAABB()
+proc expand*(self: AABB; to: Vector3): AABB {.inline.} =
+  var start = self.position
+  var done = self.position + self.size
+
+  if to.x < start.x: done.x = to.x
+  if to.y < start.y: done.y = to.y
+  if to.z < start.z: done.z = to.z
+
+  if to.x > done.x: done.x = to.x
+  if to.y > done.y: done.y = to.y
+  if to.z > done.z: done.z = to.z
+
+  result.position = start
+  result.size = done - start
 
 proc grow*(self: AABB; by: float32): AABB {.inline.} =
   getGDNativeAPI().aabbGrow(self, by).toAABB()
@@ -76,4 +91,4 @@ proc getEndpoint*(self: AABB; idx: cint): Vector3 {.inline.} =
   getGDNativeAPI().aabbGetEndpoint(self, idx).toVector3()
 
 proc `==`*(a, b: AABB): bool {.inline.} =
-  getGDNativeAPI().aabbOperatorEqual(a, b)
+  a.size == b.size and a.position == b.position
