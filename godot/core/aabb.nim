@@ -73,9 +73,9 @@ proc expand*(self: AABB; to: Vector3): AABB {.inline.} =
   var start = self.position
   var done = self.position + self.size
 
-  if to.x < start.x: done.x = to.x
-  if to.y < start.y: done.y = to.y
-  if to.z < start.z: done.z = to.z
+  if to.x < start.x: start.x = to.x
+  if to.y < start.y: start.y = to.y
+  if to.z < start.z: start.z = to.z
 
   if to.x > done.x: done.x = to.x
   if to.y > done.y: done.y = to.y
