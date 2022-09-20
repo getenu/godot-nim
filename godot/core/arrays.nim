@@ -4,7 +4,8 @@ import hashes
 import internal/godotinternaltypes, internal/godotarrays
 
 type
-  Array* = ref object
+  Array* = ref ArrayValue
+  ArrayValue = object
     godotArray: GodotArray
 
 proc godotArray*(arr: Array): ptr GodotArray {.inline.} =
@@ -12,17 +13,17 @@ proc godotArray*(arr: Array): ptr GodotArray {.inline.} =
   ## ``arr``
   addr arr.godotArray
 
-proc arrayFinalizer(arr: Array) =
+proc `=destroy`(arr: var ArrayValue) =
   arr.godotArray.deinit()
 
 proc newArray*(arr: GodotArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   result.godotArray = arr
 
 import variants
 
 proc newArray*(s: varargs[Variant]): Array =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray)
   for v in s:
     result.godotArray.add(v.godotVariant[])
@@ -35,31 +36,31 @@ proc newArray*(s: openarray[Variant]): Array =
 import poolarrays
 
 proc newArray*(pca: PoolColorArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pca.godotPoolColorArray[])
 
 proc newArray*(pv3a: PoolVector3Array): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pv3a.godotPoolVector3Array[])
 
 proc newArray*(pv2a: PoolVector2Array): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pv2a.godotPoolVector2Array[])
 
 proc newArray*(psa: PoolStringArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, psa.godotPoolStringArray[])
 
 proc newArray*(pra: PoolRealArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pra.godotPoolRealArray[])
 
 proc newArray*(pia: PoolIntArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pia.godotPoolIntArray[])
 
 proc newArray*(pba: PoolByteArray): Array {.inline.} =
-  new(result, arrayFinalizer)
+  new(result)
   initGodotArray(result.godotArray, pba.godotPoolByteArray[])
 
 proc `[]=`*(self: Array; idx: int; value: Variant) {.inline.} =

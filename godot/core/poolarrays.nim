@@ -10,14 +10,15 @@ import vector2, vector3, colors
 template definePoolArrayBase(T, GodotT, DataT, fieldName, newProcName,
                              initProcName) =
   type
-    T* = ref object
+    T* = ref TValue
+    TValue = object
       fieldName: GodotT
 
-  proc poolArrayFinalizer(arr: T) =
+  proc `=destroy`*(arr: var TValue) =
     arr.fieldName.deinit()
 
   proc newProcName*(): T {.inline.} =
-    new(result, poolArrayFinalizer)
+    new(result)
     initProcName(result.fieldName)
 
   proc fieldName*(self: T): ptr GodotT {.inline.} =
@@ -26,7 +27,7 @@ template definePoolArrayBase(T, GodotT, DataT, fieldName, newProcName,
     addr self.fieldName
 
   proc newProcName*(arr: GodotT): T {.inline.} =
-    new(result, poolArrayFinalizer)
+    new(result)
     result.fieldName = arr
 
   proc hash*(arr: T): Hash =
@@ -63,7 +64,7 @@ template definePoolArray(T, GodotT, DataT, fieldName, newProcName, initProcName;
                          noData = false) =
 
   proc newProcName*(arr: Array): T {.inline.} =
-    new(result, poolArrayFinalizer)
+    new(result)
     initProcName(result.fieldName, arr.godotArray[])
 
   proc add*(self: T; arr: T) {.inline.} =

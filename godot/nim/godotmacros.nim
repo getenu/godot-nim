@@ -345,7 +345,7 @@ template registerGodotClass(classNameIdent, classNameLit; isRefClass: bool;
   proc createFuncIdent(obj: ptr GodotObject,
                        methData: pointer): pointer {.noconv.} =
     var nimObj: classNameIdent
-    new(nimObj, nimGodotObjectFinalizer[classNameIdent])
+    new(nimObj)
     nimObj.setGodotObject(obj)
     nimObj.isRef = when isRefClass: true else: false
     nimObj.setNativeObject(asNimGodotObject[NimGodotObject](
@@ -554,23 +554,11 @@ proc genType(obj: ObjectDecl): NimNode {.compileTime.} =
   template registerGodotMethod(classNameLit, classNameIdent, methodNameIdent,
                                methodNameLit, minArgs, maxArgs,
                                argTypes, methFuncIdent, hasReturnValue) =
-    when (NimMajor, NimMinor, NimPatch) < (0, 19, 0):
-      {.emit: """/*TYPESECTION*/
-N_NOINLINE(void, setStackBottom)(void* thestackbottom);
-""".}
 
     proc methFuncIdent(obj: ptr GodotObject, methodData: pointer,
                        userData: pointer, numArgs: cint,
                        args: var array[MAX_ARG_COUNT, ptr GodotVariant]):
                       GodotVariant {.noconv.} =
-      var stackBottom {.volatile.}: pointer
-      stackBottom = addr(stackBottom)
-      when (NimMajor, NimMinor, NimPatch) < (0, 19, 0):
-        {.emit: """
-          setStackBottom((void*)(&`stackBottom`));
-        """.}
-      else:
-        nimGC_setStackBottom(stackBottom)
       let self = cast[classNameIdent](userData)
       const isStaticCall = methodNameLit == cstring"_ready" or
                            methodNameLit == cstring"_process" or

@@ -6,20 +6,21 @@ import internal/godotinternaltypes, internal/godotnodepaths,
        internal/godotstrings
 
 type
-  NodePath* = ref object
+  NodePath* = ref NodePathValue
+  NodePathValue = object
     path: GodotNodePath
 
-proc nodePathFinalizer(path: NodePath) =
+proc `=destroy`*(path: var NodePathValue) =
   path.path.deinit()
 
 proc newNodePath*(path: GodotNodePath): NodePath =
   ## Moves the GodotNodePath into Nim wrapper. The ``path`` will be destroyed
   ## automatically when the result is no longer referenced.
-  new(result, nodePathFinalizer)
+  new(result)
   result.path = path
 
 proc newNodePath*(s: string): NodePath =
-  new(result, nodePathFinalizer)
+  new(result)
   var str = s.toGodotString()
   initGodotNodePath(result.path, str)
   str.deinit()

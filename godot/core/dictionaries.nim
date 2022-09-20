@@ -5,18 +5,19 @@ import internal/godotinternaltypes, internal/godotdictionaries,
        internal/godotvariants, internal/godotstrings
 
 type
-  Dictionary* = ref object
+  Dictionary* = ref DictionaryValue
+  DictionaryValue = object
     godotDictionary: GodotDictionary
 
-proc dictionaryFinalizer(dict: Dictionary) =
+proc `=destroy`*(dict: var DictionaryValue) =
   dict.godotDictionary.deinit()
 
 proc newDictionary*(): Dictionary {.inline.} =
-  new(result, dictionaryFinalizer)
+  new(result)
   initGodotDictionary(result.godotDictionary)
 
 proc newDictionary*(dict: GodotDictionary): Dictionary {.inline.} =
-  new(result, dictionaryFinalizer)
+  new(result)
   result.godotDictionary = dict
 
 proc godotDictionary*(dict: Dictionary): ptr GodotDictionary =
@@ -39,7 +40,7 @@ proc hash*(self: Dictionary): Hash {.inline.} =
 import variants, arrays
 
 proc newVariant*(dict: Dictionary): Variant {.inline.} =
-  new(result, variantFinalizer)
+  new(result)
   initGodotVariant(result.godotVariant[], dict.godotDictionary)
 
 proc asDictionary*(self: Variant): Dictionary {.inline.} =
