@@ -503,8 +503,6 @@ proc genType(obj: ObjectDecl): NimNode {.compileTime.} =
     let decl = meth.nimNode.copyNimTree()
     decl.body = newEmptyNode()
     decl.addPragma(ident("gcsafe"))
-    decl.addPragma(newNimNode(nnkExprColonExpr).add(ident("locks"),
-                                                newIntLitNode(0)))
     decls.add(decl)
   # add forward declarations first
   for decl in decls:
@@ -575,7 +573,7 @@ proc genType(obj: ObjectDecl): NimNode {.compileTime.} =
         try:
           invokeVarArgs(methodNameIdent, self, minArgs, maxArgs, numArgs,
                         args, argTypes, hasReturnValue, isStaticCall)
-        except:
+        except CatchableError:
           let ex = getCurrentException()
           printError("Unhandled Nim exception (" & $ex.name & "): " &
                      ex.msg & "\n" & ex.getStackTrace())
