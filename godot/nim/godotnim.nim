@@ -881,6 +881,7 @@ proc godot_nativescript_init(handle: pointer) {.
     cdecl, exportc, dynlib.} =
   nativeLibHandle = handle
   {.emit: """
+    extern void NimMain();
     NimMain();
   """.}
 
