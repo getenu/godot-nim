@@ -573,7 +573,7 @@ proc genType(obj: ObjectDecl): NimNode {.compileTime.} =
         try:
           invokeVarArgs(methodNameIdent, self, minArgs, maxArgs, numArgs,
                         args, argTypes, hasReturnValue, isStaticCall)
-        except CatchableError:
+        except Exception:
           let ex = getCurrentException()
           printError("Unhandled Nim exception (" & $ex.name & "): " &
                      ex.msg & "\n" & ex.getStackTrace())
