@@ -163,8 +163,11 @@ type
     Flags, ##  hint_text= "flag1,flag2,etc" (as bit flags)
     Layers2DRender,
     Layers2DPhysics,
+    Layers2DNavigation,
     Layers3DRender,
     Layers3DPhysics,
+    Layers3DNavigation,
+
     File, ## a file path must be passed, hint_text (optionally)
           ## is a filter "*.png,*.wav,*.doc,"
     Dir,  ## a directort path must be passed
@@ -173,6 +176,7 @@ type
     GlobalDir, ## a directort path must be passed
     ResourceType, ## a resource object type
     MultilineText, ## used for string properties that can contain multiple lines
+    PlaceholderText,
     ColorNoAlpha, ## used for ignoring alpha component when editing a color
     ImageCompressLossy,
     ImageCompressLossless,
@@ -188,6 +192,10 @@ type
     PropertyOfBaseType, ## a property of a base type
     PropertyOfInstance, ## a property of an instance
     PropertyOfScript, ## a property of a script & base
+    ObjectTooBig,
+    NodePathValidTypes,
+    SaveFile,
+    EnumSuggestion,
     PropertyHintMax
 
 const
